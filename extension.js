@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const path = require('path');
+const fs = require('fs');
 const { exec } = require('child_process');
 
 // ─── Sound Player ─────────────────────────────────────────────────────────────
@@ -8,6 +9,7 @@ function playSound(soundFile, volume) {
   try {
     const platform = process.platform;
     const vol = Math.max(0, Math.min(100, volume ?? 80));
+    const ext = path.extname(soundFile).toLowerCase();
 
     if (platform === 'darwin') {
       // afplay is built-in on ALL macOS versions (10.5+)
@@ -25,39 +27,59 @@ function playSound(soundFile, volume) {
       });
 
     } else if (platform === 'win32') {
-      // System.Media.SoundPlayer — built into all Windows versions (.NET)
+      // System.Media.SoundPlayer supports WAV only; use WMPlayer fallback for MP3.
       const safePath = soundFile.replace(/\\/g, '\\\\').replace(/'/g, "''");
-      exec(
-        `powershell -c "$p = New-Object System.Media.SoundPlayer '${safePath}'; $p.PlaySync()"`,
-        (err) => {
-          if (err) {
-            // Fallback: Windows Media Player via PowerShell
-            exec(`powershell -c "(New-Object -ComObject WMPlayer.OCX).openPlayer('${safePath}')"`);
+
+      if (ext === '.wav') {
+        exec(
+          `powershell -c "$p = New-Object System.Media.SoundPlayer '${safePath}'; $p.PlaySync()"`,
+          (err) => {
+            if (err) {
+              // Fallback: Windows Media Player via PowerShell
+              exec(`powershell -c "(New-Object -ComObject WMPlayer.OCX).openPlayer('${safePath}')"`);
+            }
           }
-        }
-      );
+        );
+      } else {
+        exec(`powershell -c "(New-Object -ComObject WMPlayer.OCX).openPlayer('${safePath}')"`);
+      }
 
     } else {
       // Linux — try multiple audio players in order of availability
       const pv = Math.round((vol / 100) * 65536);  // paplay:  0–65536
       const fv = vol;                                // ffplay:  0–100
       const cv = (vol / 100).toFixed(2);            // cvlc:    0.0–1.0
+      const isMp3 = ext === '.mp3';
 
-      exec(
-        `if command -v paplay >/dev/null 2>&1; then
-           paplay --volume=${pv} "${soundFile}"
-         elif command -v aplay >/dev/null 2>&1; then
-           aplay "${soundFile}"
-         elif command -v ffplay >/dev/null 2>&1; then
-           ffplay -nodisp -autoexit -volume ${fv} "${soundFile}" >/dev/null 2>&1
-         elif command -v mpg123 >/dev/null 2>&1; then
-           mpg123 -q "${soundFile}"
-         elif command -v cvlc >/dev/null 2>&1; then
-           cvlc --play-and-exit --gain ${cv} "${soundFile}" >/dev/null 2>&1
-         else
-           echo "Faah Sound: no audio player found" >&2
-         fi`
-      );
+      const linuxCommand = isMp3
+        ? `if command -v ffplay >/dev/null 2>&1; then
+             ffplay -nodisp -autoexit -volume ${fv} "${soundFile}" >/dev/null 2>&1
+           elif command -v mpg123 >/dev/null 2>&1; then
+             mpg123 -q "${soundFile}"
+           elif command -v cvlc >/dev/null 2>&1; then
+             cvlc --play-and-exit --gain ${cv} "${soundFile}" >/dev/null 2>&1
+           elif command -v paplay >/dev/null 2>&1; then
+             paplay --volume=${pv} "${soundFile}"
+           elif command -v aplay >/dev/null 2>&1; then
+             aplay "${soundFile}"
+           else
+             echo "Faah Sound: no audio player found" >&2
+           fi`
+        : `if command -v paplay >/dev/null 2>&1; then
+             paplay --volume=${pv} "${soundFile}"
+           elif command -v aplay >/dev/null 2>&1; then
+             aplay "${soundFile}"
+           elif command -v ffplay >/dev/null 2>&1; then
+             ffplay -nodisp -autoexit -volume ${fv} "${soundFile}" >/dev/null 2>&1
+           elif command -v mpg123 >/dev/null 2>&1; then
+             mpg123 -q "${soundFile}"
+           elif command -v cvlc >/dev/null 2>&1; then
+             cvlc --play-and-exit --gain ${cv} "${soundFile}" >/dev/null 2>&1
+           else
+             echo "Faah Sound: no audio player found" >&2
+           fi`;
+
+      exec(linuxCommand);
     }
   } catch (err) {
     console.error('Faah Sound: error playing sound:', err);

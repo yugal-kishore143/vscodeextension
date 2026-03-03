@@ -15,7 +15,7 @@
 * 🔴 **Faah!** — Plays when a task fails.
 * 🟢 **Jai Hoo!** — Plays when a task succeeds.
 * 🔊 **Volume control** — Set volume from 0 to 100.
-* 🎵 **Custom sounds** — Use your own `.wav` files.
+* 🎵 **Custom sounds** — Use your own `.mp3` or `.wav` files.
 * ✅ **Enable / Disable** — Toggle sounds without uninstalling.
 * 🧪 **Test commands** — Preview sounds anytime from the Command Palette.
 
@@ -49,8 +49,8 @@ The extension automatically tries these players in order — no setup needed if 
 
 The extension uses the following sound files located in the `sounds/` directory:
 
-* `fahhh.wav` — Failure sound
-* `jaihoo.wav` — Success sound
+* `fahhh.mp3` / `fahhh.wav` — Failure sound (MP3 preferred)
+* `jaihoo.mp3` / `jaihoo.wav` — Success sound (MP3 preferred)
 
 ---
 
@@ -58,8 +58,8 @@ The extension uses the following sound files located in the `sounds/` directory:
 
 The extension listens for task completions in VS Code. Depending on the task's exit code, it plays the appropriate sound:
 
-* **Success (exit code 0):** Plays `jaihoo.wav`
-* **Failure (non-zero exit code):** Plays `fahhh.wav`
+* **Success (exit code 0):** Plays `jaihoo.mp3` (falls back to `jaihoo.wav`)
+* **Failure (non-zero exit code):** Plays `fahhh.mp3` (falls back to `fahhh.wav`)
 
 ---
 
@@ -85,8 +85,8 @@ Access these from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`):
 | `faahSound.enableFaah`        | `true` | Toggle failure sound independently    |
 | `faahSound.enableJaiHoo`      | `true` | Toggle success sound independently    |
 | `faahSound.volume`            | `80`   | Volume level (0–100)                 |
-| `faahSound.customFaahSound`   | `""`   | Path to a custom failure `.wav`file |
-| `faahSound.customJaiHooSound` | `""`   | Path to a custom success `.wav`file |
+| `faahSound.customFaahSound`   | `""`   | Path to a custom failure `.mp3` or `.wav` file |
+| `faahSound.customJaiHooSound` | `""`   | Path to a custom success `.mp3` or `.wav` file |
 
 ---
 
