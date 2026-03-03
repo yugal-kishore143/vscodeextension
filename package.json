@@ -72,11 +72,11 @@
         },
         "faahSound.customFaahSound": {
           "type": "string", "default": "",
-          "description": "Path to custom Faah sound file (.wav). Leave empty to use default."
+          "description": "Path to custom Faah sound file (.mp3 or .wav). Leave empty to use default."
         },
         "faahSound.customJaiHooSound": {
           "type": "string", "default": "",
-          "description": "Path to custom Jai Hoo sound file (.wav). Leave empty to use default."
+          "description": "Path to custom Jai Hoo sound file (.mp3 or .wav). Leave empty to use default."
         }
       }
     }
