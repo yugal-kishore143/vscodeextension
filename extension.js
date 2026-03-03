@@ -89,12 +89,8 @@ function playSound(soundFile, volume) {
 // ─── Path Helpers ─────────────────────────────────────────────────────────────
 
 function getDefaultSoundPath(type) {
-  const mp3File = type === 'failure' ? 'fahhh.mp3' : 'jaihoo.mp3';
-  const wavFile = type === 'failure' ? 'fahhh.wav' : 'jaihoo.wav';
-  const mp3Path = path.join(__dirname, 'sounds', mp3File);
-
-  // Prefer MP3 defaults, but keep WAV fallback for backwards compatibility.
-  return fs.existsSync(mp3Path) ? mp3Path : path.join(__dirname, 'sounds', wavFile);
+  const file = type === 'failure' ? 'fahhh.mp3' : 'jaihoo.mp3';
+  return path.join(__dirname, 'sounds', file);
 }
 
 function getSoundPath(type) {

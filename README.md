@@ -96,5 +96,5 @@ Access these from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`):
 
 ---
 
-> Made with ❤️ by Raghavvian
+> Made with ❤️ by Yugal Kishore
 >
